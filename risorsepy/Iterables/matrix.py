@@ -12,7 +12,5 @@ print(board)#stampa la lista di liste creata
 print(board[0][1])#stampa il secondo elemento della prima lista
 
 #crea una lista di 3 liste di 4 liste con liste di 5 elementi False
-#brematurata come un spazio 3d con scappellamento a destra, se fosse
-#un hotel con 3 pianie 4 stanze da 5 posti del cognato del vicesindaco
 rooms = [[[False for r in range(5)] for f in range(4)] for t in range(3)]
 for i in range(3): print(rooms[i],'\n')
