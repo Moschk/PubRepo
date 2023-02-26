@@ -1,6 +1,6 @@
 from functions import *
 
-#create a list of list of shrooms, divided for cathegory
+# create a list of list of shrooms, divided into cathegories
 # shroom_cathegories = []
 # for urls in DICT:
 #     shroom_cathegories.append( list_of_cat_shrooms(DICT[urls]) )
