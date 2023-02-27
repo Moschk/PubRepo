@@ -37,69 +37,88 @@ class WikiNotEx(ShroomBase):
         self.shroom_attr = shroom_attr
 
 
-# ignore html and return a string with data
-def wash_html(html_code_as_string):
-    start = html_code_as_string.find('>') +1
-    end = 0
-    temp_data = ''
-    while end != -1:
-        end = html_code_as_string.find('<', start)
-        if html_code_as_string[start: end] not in ['', ' ', '  ', '\n', '\t']:
-            temp_data += html_code_as_string[start: end] + '\n'
-        start = html_code_as_string.find('>', end) +1
-    return temp_data #string
+class Shroom():
+    def __init__(self, str_name):
+        self.latin_name = str_name
+
+    def __str__(self):
+        return f'{self.latin_name}'
+
+    @classmethod
+    def validate(cls, possible_name):
+        temp = possible_name.split()
+        if len(temp) <=4:
+            possible_name = possible_name.replace(' ', '_')
+            _shroom = cls(possible_name)
+            return _shroom
+        else: return None
+
+    # crea il link del fungo, ritorna una stringa
+    def create_link(self):
+        url_shroom = URL_WIKI_IT + self.latin_name
+        return url_shroom #string
+    
+    # extract a shroom's table
+    def html_table(self):
+        return Soup_like.slice_of_html(self.create_link(), '<table class="infobox sinottico"', '</tr></tbody></table>')
 
 
-# crea il link del fungo, ritorna una stringa
-def create_link_of_shroom(shroom_name):
-    url_shroom = URL_WIKI_IT + shroom_name.replace(' ', '_')
-    return url_shroom #string
+class Soup_like():
 
-# more general, extract a slice of html 
-def slice_of_html(url, starting_str, ending_str):
-    with urlopen(url) as opened_url:
-        webpage = opened_url.read()
-        webpage = webpage.decode('utf-8')
-        first = webpage.find(starting_str)
-        last = webpage.find( ending_str, first)
-        new_page = webpage[ first : last + len(ending_str) ]
-    return new_page
+    @staticmethod
+    def write_html(string_with_html):
+        stream = open('shroom_finder\\created_html\\provatab.html', 'w')
+        stream.write(string_with_html)
+        stream.close()
 
-# extract a shroom's table
-def shroom_html_table(url_shroom):
-    return slice_of_html(url_shroom, '<table class="infobox sinottico"', '</tr></tbody></table>')
+    @staticmethod
+    def open_html(local_url):
+        local_url = 'shroom_finder\\created_html\\provatab.html'
+        webbrowser.open_new_tab(local_url)
 
-# create a list of shrooms
-def list_of_cat_shrooms(url_cat_shrooms):
-    cutted_webpage = slice_of_html(url_cat_shrooms, '<h3>A</h3>', '<noscript><img src')   
-    start = cutted_webpage.find('>')
-    end = 0
-    list_cat_shrooms = []
-    while end != -1:
-        temp_shroom_name = ''
-        end = cutted_webpage.find('<', start)
-        if cutted_webpage.find('>', end) - end < 4:
-            temp_shroom_name = cutted_webpage[start+1: end]
-            if len(temp_shroom_name) > 2 and len(temp_shroom_name) < 80:
-                list_cat_shrooms.append(temp_shroom_name)
-        start = cutted_webpage.find('>', end)
-    return list_cat_shrooms #list of strings
+    @staticmethod
+    # ignore html and return a string with data
+    def wash_html(html_code_as_string):
+        start = html_code_as_string.find('>') +1
+        end = 0
+        temp_data = ''
+        while end != -1:
+            end = html_code_as_string.find('<', start)
+            if html_code_as_string[start: end] not in ['', ' ', '  ', '\n', '\t']:
+                temp_data += html_code_as_string[start: end] + '\n'
+            start = html_code_as_string.find('>', end) +1
+        return temp_data #string
 
-# validate and delete links that are not shrooms
-def validate_shrooms(shrooms):
-    for i in range(len(shrooms)):
-        temp = shrooms[i].split()
-        if len(temp) >4:
-            print(temp)
-            del shrooms[i]
-            print('deleted')
-    return shrooms
+    @staticmethod
+    # more general, extract a slice of html 
+    def slice_of_html(url, starting_str, ending_str):
+        with urlopen(url) as opened_url:
+            webpage = opened_url.read()
+            webpage = webpage.decode('utf-8')
+            first = webpage.find(starting_str)
+            last = webpage.find( ending_str, first)
+            new_page = webpage[ first : last + len(ending_str) ]
+        return new_page
 
-def write_html(string_with_html):
-    stream = open('progetti\\shroom_finder\\created_html\\provatab.html', 'w')
-    stream.write(string_with_html)
-    stream.close()
-
-def open_html(local_url):
-    local_url = 'progetti\\shroom_finder\\created_html\\provatab.html'
-    webbrowser.open_new_tab(local_url)
+    @staticmethod
+    # create a list of shrooms
+    def list_of_cat_shrooms(url_cat_shrooms):
+        cutted_webpage = Soup_like.slice_of_html(url_cat_shrooms, '<h3>A</h3>', '<noscript><img src')   
+        start = cutted_webpage.find('>')
+        end = 0
+        list_cat_shrooms = []
+        while end != -1:
+            temp_shroom_name = ''
+            end = cutted_webpage.find('<', start)
+            if cutted_webpage.find('>', end) - end < 4:
+                temp_shroom_name = cutted_webpage[start+1: end]
+                if len(temp_shroom_name) > 2 and len(temp_shroom_name) < 80:
+                    print(temp_shroom_name)
+                    list_cat_shrooms.append(Shroom.validate(temp_shroom_name))
+            start = cutted_webpage.find('>', end)
+        return list_cat_shrooms #list of strings
+    
+    @staticmethod
+    # create and open in browser an html table of the shroom
+    def html_table_browser(shroom):
+        Soup_like.open_html(Soup_like.write_html(Shroom.html_table(shroom)))

@@ -1,12 +1,12 @@
 from functions import *
 
-# create a list of list of shrooms, divided into cathegories
-# shroom_cathegories = []
-# for urls in DICT:
-#     shroom_cathegories.append( list_of_cat_shrooms(DICT[urls]) )
-# print(shroom_cathegories)
+#create a list of list of shrooms, divided into cathegories
+shroom_cathegories = []
+for urls in DICT:
+    shroom_cathegories.append(Soup_like.list_of_cat_shrooms(DICT[urls]) )
 
-#open_html(write_html(shroom_html_table('https://it.wikipedia.org/wiki/Boletus_edulis')))
+for el in shroom_cathegories:
+    for elem in el:
+        print(str(elem))
 
-
-l = list_of_cat_shrooms(DICT[urls])
+Soup_like.html_table_browser(shroom_cathegories[1][0])
